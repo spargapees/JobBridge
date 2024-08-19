@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// load .env file
-	envPath := "C:/Users/Aza/GoLangProjects/JobBridge/internal/database/.env"
+	envPath := "C:/Users/Aza/GoLangProjects/JobBridge/VacanciesService/db/.env"
 	err := godotenv.Load(envPath)
 	if err != nil {
 		log.Fatalf("Error loading .env file from %s: %v", envPath, err)
