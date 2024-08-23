@@ -2,7 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	server "job_bridge/vacancies_service"
+	"job_bridge/vacancies_service/internal/controllers"
 	"log"
 	"os"
 
@@ -10,28 +11,35 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const (
+	envPath = ".env"
+)
+
 func main() {
-	// load .env file
-	envPath := "C:/Users/Aza/GoLangProjects/JobBridge/VacanciesService/db/.env"
 	err := godotenv.Load(envPath)
 	if err != nil {
 		log.Fatalf("Error loading .env file from %s: %v", envPath, err)
 	}
 
 	postgresURI := os.Getenv("DATABASE_URL")
+	log.Print(postgresURI)
 
 	db, err := sql.Open("postgres", postgresURI)
 	if err != nil {
 		log.Panic(err)
 	}
+
 	err = db.Ping()
+
 	if err != nil {
 		db.Close()
 		log.Panic(err)
 	}
 
-	fmt.Println("Connected to database")
+	handler := controllers.NewController()
 
-	// keep the program running
-	select {}
+	srv := new(server.HTTPServer)
+	if err := srv.Run_server("8080", handler.InitRoutes()); err != nil {
+		log.Fatalf("error with run server: %s", err.Error())
+	}
 }
